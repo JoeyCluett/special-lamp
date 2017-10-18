@@ -28,7 +28,6 @@ int main(int argc, char *argv[]) {
  	portno = atoi(argv[2]);
  	sockfd = socket(AF_INET, SOCK_STREAM, 0); // indicate IPv4 and TCP connection
  	if (sockfd < 0) {
- 		error("ERROR opening socket");
  		printf("Error opening socket: %s\n", strerror(errno));
  	}
 

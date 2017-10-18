@@ -5,6 +5,7 @@
 #include <sys/types.h>  // for system calls
 #include <sys/socket.h> // for sockets
 #include <netinet/in.h> // for internet
+#include <errno.h>      // errno, strerror
 #include <pthread.h>
 
 void* client_thread(void* args);
@@ -13,7 +14,6 @@ int main(int argc, char *argv[]) {
  	int sockfd, portno;
  
  	socklen_t clilen; 
- 	char buffer[256]; 
  	struct sockaddr_in serv_addr, cli_addr;
   
  	if (argc != 2) {
@@ -21,8 +21,12 @@ int main(int argc, char *argv[]) {
  		exit(1);
  	}
 
+ 	int option = 1;
  	sockfd = socket(AF_INET, SOCK_STREAM, 0);
- 
+ 	
+ 	// reuse port numbers even if previous server exited abnoramlly:
+ 	setsockopt(sockfd, SOL_SOCKET, SO_REUSEADDR, &option, sizeof(option)); 
+
 	if (sockfd < 0) {
  		printf("ERROR opening socket: %s\n", strerror(errno));
  		exit(1);
@@ -36,7 +40,7 @@ int main(int argc, char *argv[]) {
   	serv_addr.sin_port        = htons(portno);
  
  	if (bind(sockfd, (struct sockaddr*)&serv_addr, sizeof(serv_addr)) < 0) {
-		printf("ERROR in binding: %S\n", strerror(errno));
+		printf("ERROR in binding: %s\n", strerror(errno));
 		exit(1);
  	}
  
@@ -64,16 +68,25 @@ int main(int argc, char *argv[]) {
 
 void* client_thread(void* args) {
 	int sockfd = *(int*)args;
+ 	char buffer[256]; 
 
- 	bzero(buffer,256);
- 	int n = read(newsockfd,buffer,255);
- 	if (n < 0) error("ERROR reading from socket");
+ 	bzero(buffer, 256);
+ 	int n = read(sockfd, buffer, 255);
+ 	if (n < 0) { 
+ 		printf("ERROR reading from socket: %s\n", strerror(errno));
+ 		close(sockfd);
+ 		return 0; // null
+ 	}
+
  	printf("Here is the message: %s\n",buffer);
  
- 	n = write(newsockfd,"I got your message",18);
- 	if (n < 0) 
- 		error("ERROR writing to socket");
+ 	n = write(sockfd,"I got your message",18);
+ 	if (n < 0) {
+ 		printf("ERROR writing to socket: %s\n", strerror(errno));
+ 		close(sockfd);
+ 		return 0; // null
+ 	}
  
- 	close(newsockfd);
-
+ 	close(sockfd);
+ 	return 0; // null
 }
