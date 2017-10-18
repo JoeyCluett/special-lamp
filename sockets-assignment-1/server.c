@@ -45,7 +45,7 @@ int main(int argc, char *argv[]) {
 
  	while(1) {
  		int* newsockfd = (int*)malloc(sizeof(int));
-	 	*newsockfd = accept(sockfd, (struct sockaddr *)&cli_addr, &clilen);
+	 	*newsockfd = accept(sockfd, (struct sockaddr*)&cli_addr, &clilen);
 	 
 	 	if(*newsockfd < 0) {
 	 		printf("ERROR on accept: %s\n", strerror(errno));
