@@ -1,5 +1,4 @@
 /**
- *
  * @author joe
  */
 public class ArrayDoubleStack<E> implements DoubleStack<E> {
@@ -19,7 +18,7 @@ public class ArrayDoubleStack<E> implements DoubleStack<E> {
         blueStack = (E[])new Object[blueCapacity];
     }
     
-    private boolean arrayPush(E[] arr, Integer top, E element) {
+    private boolean arrayPush(E[] arr, int top, E element) {
         if(top == arr.length)
             return false;
         
@@ -28,7 +27,7 @@ public class ArrayDoubleStack<E> implements DoubleStack<E> {
         return true;
     }
     
-    private boolean arrayPop(E[] arr, Integer top, E element) {
+    private boolean arrayPop(E[] arr, int top, E element) {
         if(top == 0) {
             element = null;
             return false;
@@ -41,12 +40,20 @@ public class ArrayDoubleStack<E> implements DoubleStack<E> {
     
     @Override
     public boolean redPush(E element) {
-        return arrayPush(redStack, redStackTop, element);
+        if(arrayPush(redStack, redStackTop, element)) {
+            redStackTop++;
+            return true;
+        }
+        return false;
     }
 
     @Override
     public boolean redPop(E element) {
-        return arrayPop(redStack, redStackTop, element);
+        if(arrayPop(redStack, redStackTop, element)) {
+            redStackTop--;
+            return true;
+        }
+        return false;
     }
 
     @Override
@@ -56,12 +63,20 @@ public class ArrayDoubleStack<E> implements DoubleStack<E> {
     
     @Override
     public boolean bluePush(E element) {
-        return arrayPush(blueStack, blueStackTop, element);
+        if(arrayPush(blueStack, blueStackTop, element)) {
+            blueStackTop++;
+            return true;
+        }
+        return false;
     }
 
     @Override
     public boolean bluePop(E element) {
-        return arrayPop(blueStack, blueStackTop, element);
+        if(arrayPop(blueStack, blueStackTop, element)) {
+            blueStackTop--;
+            return true;
+        }
+        return false;
     }
     
     @Override

@@ -1,14 +1,23 @@
-#include <stdio.h>
-#include <stdlib.h>     // for IOs
-#include <string.h>
+#include <stdio.h>      // printf
+#include <stdlib.h>     // ...?
+#include <string.h>     // strlen
 #include <unistd.h>     // usleep
-#include <sys/types.h>  // for system calls
-#include <sys/socket.h> // for sockets
+#include <sys/types.h>  // intx_t and friends
+#include <sys/socket.h> // socket, setsockopt
 #include <netinet/in.h> // for internet
 #include <errno.h>      // errno, strerror
-#include <pthread.h>
+#include <pthread.h>    // pthread and friends
+#include <signal.h>     // signal handling facilities
+
+// helper functions: guaranteeWrite(), guaranteeRead()
+#include "comm_help.h"
 
 void* client_thread(void* args);
+
+void ctrl_c(int signum) {
+	printf("Exiting server program...");
+	exit(signum);
+}
 
 int main(int argc, char *argv[]) {
  	int sockfd, portno;
@@ -21,13 +30,16 @@ int main(int argc, char *argv[]) {
  		exit(1);
  	}
 
+ 	// register the sig-term callback
+    signal(SIGINT, ctrl_c);
+
  	int option = 1;
  	sockfd = socket(AF_INET, SOCK_STREAM, 0);
  	
  	// reuse port numbers even if previous server exited abnoramlly:
  	setsockopt(sockfd, SOL_SOCKET, SO_REUSEADDR, &option, sizeof(option)); 
 
-	if (sockfd < 0) {
+	if(sockfd < 0) {
  		printf("ERROR opening socket: %s\n", strerror(errno));
  		exit(1);
 	}
@@ -69,6 +81,9 @@ int main(int argc, char *argv[]) {
 void* client_thread(void* args) {
 	int sockfd = *(int*)args;
  	char buffer[256]; 
+
+ 	char* msg = "Type HALT to quit the server.\nType QUIT to quit a particular client\n";
+ 	write(sockfd, msg, strlen(msg)+1); // include null terminator
 
  	bzero(buffer, 256);
  	int n = read(sockfd, buffer, 255);
