@@ -44,21 +44,46 @@ int main(int argc, char *argv[]) {
  	server->h_length);
  	serv_addr.sin_port = htons(portno);
 
- 	if (connect(sockfd,(struct sockaddr *) &serv_addr,sizeof(serv_addr)) < 0)
- 		error("ERROR connecting");
+ 	if (connect(sockfd,(struct sockaddr *) &serv_addr,sizeof(serv_addr)) < 0) {
+ 		printf("ERROR connecting: %s\n", strerror(errno));
+ 		return 1;
+ 	}
 
-	printf("Please enter the message: ");
- 	bzero(buffer,256);
- 	fgets(buffer,255,stdin);
- 	n = write(sockfd,buffer,strlen(buffer));
- 	if (n < 0)
- 		error("ERROR writing to socket");
- 	bzero(buffer,256);
- 	n = read(sockfd,buffer,255);
- 	if (n < 0)
- 		error("ERROR reading from socket");
+ 	bzero(buffer, 256);
+ 	n = read(sockfd, buffer, 256);
+ 	printf("Server msg:\n%s\n", buffer);
+
+ 	while(1) {
+ 		puts("Please enter message: ");
+
+ 		bzero(buffer, 256);
+ 		fgets(buffer, 255, stdin);
+ 		
+ 		if(strcmp(buffer, "EXIT") == 0) {
+ 			// message server to close all connections
+ 			write(sockfd, "EXIT", 4); // EXIT is 4 characters
+
+ 			fclose(sockfd);
+ 			return 0;
+ 		} else if(strcmp(buffer, "HALT") == 0) {
+ 			// message server to close client connection
+ 			write(sockfd, "HALT", 4);
+ 			return 0;
+ 		}
+
+ 		n = write(sockfd, buffer, strlen(buffer)); // write the contents to the buffer
  	
- 	printf("%s\n",buffer);
- 	close(sockfd);
- 	return 0;
+ 		if(n < 0)
+ 			printf("ERROR writing to socket: %s\n", strerror(errno));
+
+ 		bzero(buffer, 256);
+ 		n = read(sockfd, buffer, 255);
+
+ 		if(n < 0)
+ 			printf("ERROR read from socket: %s\n", strerror(errno));
+ 		else
+ 			printf("Server replied: %s\n", buffer);
+ 	}
+
+ 	return 1;
 }

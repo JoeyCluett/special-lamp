@@ -20,7 +20,7 @@ void guaranteeRead(char* buf, int len, int sockfd) {
 	int bytes_read = 0;
 	while(bytes_read < len) {
 		// read returns the number of bytes read
-		bytes_read += read(sockfd, buf+bytes_read, len-read);
+		bytes_read += read(sockfd, buf+bytes_read, len-bytes_read);
 	}
 }
 

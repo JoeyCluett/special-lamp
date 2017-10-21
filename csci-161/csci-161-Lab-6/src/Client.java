@@ -27,13 +27,9 @@ public class Client {
         Integer i = 0;
         
         do {
-            result = ads.bluePop(i); // not very useful for primitives
-            if(result)
-                System.out.println(i);
-        } while(result);
+            i = ads.redPop();
+            System.out.println("Red pop: " + i);
+        } while(i != null);
         
     }
-    
-    
-    
 }

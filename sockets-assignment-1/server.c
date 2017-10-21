@@ -15,7 +15,7 @@
 void* client_thread(void* args);
 
 void ctrl_c(int signum) {
-	printf("Exiting server program...");
+	printf("Exiting server program...\n");
 	exit(signum);
 }
 
@@ -61,6 +61,8 @@ int main(int argc, char *argv[]) {
 
  	while(1) {
  		int* newsockfd = (int*)malloc(sizeof(int));
+
+ 		// blocks until new client connects
 	 	*newsockfd = accept(sockfd, (struct sockaddr*)&cli_addr, &clilen);
 	 
 	 	if(*newsockfd < 0) {
@@ -79,7 +81,10 @@ int main(int argc, char *argv[]) {
 }
 
 void* client_thread(void* args) {
+	// for now, only argument is socket file descriptor
 	int sockfd = *(int*)args;
+
+	// for receiving data
  	char buffer[256]; 
 
  	char* msg = "Type HALT to quit the server.\nType QUIT to quit a particular client\n";

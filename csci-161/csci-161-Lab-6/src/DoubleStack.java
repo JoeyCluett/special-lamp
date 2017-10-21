@@ -13,7 +13,7 @@ public interface DoubleStack<E> {
      * @param element E stored here on success
      * @return whether the operation was successful
      */
-    boolean redPop(E element);
+    E redPop();
     
     /**
      * @return current number of elements in red stack
@@ -30,7 +30,7 @@ public interface DoubleStack<E> {
      * @param element E stored here on success
      * @return whether the operation was successful
      */
-    boolean bluePop(E element);
+    E bluePop();
 
     /**
      * @return current number of elements in blue stack

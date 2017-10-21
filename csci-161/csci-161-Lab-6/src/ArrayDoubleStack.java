@@ -27,15 +27,13 @@ public class ArrayDoubleStack<E> implements DoubleStack<E> {
         return true;
     }
     
-    private boolean arrayPop(E[] arr, int top, E element) {
+    private E arrayPop(E[] arr, int top) {
         if(top == 0) {
-            element = null;
-            return false;
+            return null;
         }
         
         top--;
-        element = arr[top];
-        return true;
+        return arr[top];
     }
     
     @Override
@@ -48,12 +46,8 @@ public class ArrayDoubleStack<E> implements DoubleStack<E> {
     }
 
     @Override
-    public boolean redPop(E element) {
-        if(arrayPop(redStack, redStackTop, element)) {
-            redStackTop--;
-            return true;
-        }
-        return false;
+    public E redPop() {
+        return arrayPop(redStack, redStackTop);
     }
 
     @Override
@@ -71,12 +65,8 @@ public class ArrayDoubleStack<E> implements DoubleStack<E> {
     }
 
     @Override
-    public boolean bluePop(E element) {
-        if(arrayPop(blueStack, blueStackTop, element)) {
-            blueStackTop--;
-            return true;
-        }
-        return false;
+    public E bluePop() {
+        return arrayPop(blueStack, blueStackTop);
     }
     
     @Override
