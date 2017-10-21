@@ -56,7 +56,7 @@ int main(int argc, char *argv[]) {
 		exit(1);
  	}
  
- 	listen(sockfd,5); // accept 5 clients at most
+ 	listen(sockfd, 5); // accept 5 clients at most
  	clilen = sizeof(cli_addr);
 
  	while(1) {
@@ -83,30 +83,51 @@ int main(int argc, char *argv[]) {
 void* client_thread(void* args) {
 	// for now, only argument is socket file descriptor
 	int sockfd = *(int*)args;
+	printf("Socket file descriptor: %d\n", sockfd);
 
 	// for receiving data
  	char buffer[256]; 
 
- 	char* msg = "Type HALT to quit the server.\nType QUIT to quit a particular client\n";
+ 	char* msg = "Type EXIT to close your connection\n";
  	write(sockfd, msg, strlen(msg)+1); // include null terminator
 
- 	bzero(buffer, 256);
- 	int n = read(sockfd, buffer, 255);
- 	if (n < 0) { 
- 		printf("ERROR reading from socket: %s\n", strerror(errno));
- 		close(sockfd);
- 		return 0; // null
- 	}
+ 	while(1) {
 
- 	printf("Here is the message: %s\n",buffer);
- 
- 	n = write(sockfd,"I got your message",18);
- 	if (n < 0) {
- 		printf("ERROR writing to socket: %s\n", strerror(errno));
- 		close(sockfd);
- 		return 0; // null
- 	}
- 
+	 	bzero(buffer, 256);
+	 	int n = read(sockfd, buffer, 255);
+
+	 	if (n < 0) { 
+	 		printf("ERROR reading from socket: %s\n", strerror(errno));
+	 		close(sockfd);
+	 		return 0; // null
+	 	}
+
+ 		if(strcmp(buffer, "EXIT") == 0) {
+ 			printf("Client has requested EXIT\n");
+ 			close(sockfd); // close specific client connection
+ 			return NULL;   // client thread exits
+ 		} else if(strcmp(buffer, "HALT\n") == 0) {
+ 			printf("Client has requested HALT\n");
+ 			close(sockfd);
+ 			ctrl_c(SIGINT);
+ 			return NULL;
+ 		}
+	 	
+
+	 	printf("\nHere is the message: %s\n", buffer);
+//	 	printf("Length of client message: %d\n", strlen(buffer));
+
+	 	char* ret_msg = "I got your message";
+	 	n = write(sockfd, ret_msg, strlen(ret_msg));
+
+	 	if (n < 0) {
+	 		printf("ERROR writing to socket: %s", strerror(errno));
+	 		close(sockfd);
+	 		return NULL; // null
+	 	}
+
+ 	}	
+
  	close(sockfd);
  	return 0; // null
 }

@@ -58,17 +58,23 @@ int main(int argc, char *argv[]) {
 
  		bzero(buffer, 256);
  		fgets(buffer, 255, stdin);
- 		
- 		if(strcmp(buffer, "EXIT") == 0) {
- 			// message server to close all connections
- 			write(sockfd, "EXIT", 4); // EXIT is 4 characters
+// 		buffer[(int)strlen(buffer)] = '\0';
 
- 			fclose(sockfd);
- 			return 0;
- 		} else if(strcmp(buffer, "HALT") == 0) {
- 			// message server to close client connection
+ 		if(strcmp(buffer, "EXIT\n") == 0) {
+ 			// message server to close connection
+ 			printf("Requesting EXIT\n");
+
+ 			write(sockfd, "EXIT", 4); // EXIT is 4 characters
+ 			usleep(1500000); // wait a lil before exiting
+ 			exit(1);
+
+ 		} else if(strcmp(buffer, "HALT\n") == 0) {
+ 			// message server to close all connections
+ 			printf("Requesting HALT\n");
+
  			write(sockfd, "HALT", 4);
- 			return 0;
+ 			usleep(1500000); // wait for server to close connection
+ 			exit(1);
  		}
 
  		n = write(sockfd, buffer, strlen(buffer)); // write the contents to the buffer
