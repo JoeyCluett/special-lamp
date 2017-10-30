@@ -13,8 +13,8 @@ public class CardHand {
         private class Node {
             public Node(Card card, Node next) {
                 this.next = next;
-                this.card.suit = card.suit;
-                this.card.rank = card.rank;
+                this.card.setSuit(card.getSuit());
+                this.card.setRank(card.getRank());
             }
             
             Node next;
