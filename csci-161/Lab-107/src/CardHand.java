@@ -3,15 +3,6 @@
  */
 public class CardHand {
     
-    private class Card {
-        public Card(int rank, int suit) {
-            this.rank = rank;
-            this.suit = suit;
-        }
-        
-        public int suit, rank;
-    }
-    
     private class CardList {
         private Node head = null;
         private int num_cards = 0;
