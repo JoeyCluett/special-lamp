@@ -1,56 +1,65 @@
+import java.util.*; // Iterator
+
 /**
  * @author joey
  */
-public class CardHand {
+public class CardHand implements Iterable {
     
-    private class CardList {
-        private Node head = null;
-        private int num_cards = 0;
+    private LinkedPositionalList<Card> plist = new LinkedPositionalList<>();
+    private Position<Card>[] suit_positions = (Position<Card>[])(new Object[4]);
+
+    private int num_cards = 0;
+
+    @Override
+    public Iterator iterator() {
+        return new card_iterator();
+    }
+    
+    public class card_iterator implements Iterator {
         
-        // only constructor does nothing
-        public CardList() { }
+        Position<Card> pcard;
+        int suit = 0;
         
-        private class Node {
-            public Node(Card card, Node next) {
-                this.next = next;
-                this.card.setSuit(card.getSuit());
-                this.card.setRank(card.getRank());
-            }
-            
-            Node next;
-            Card card; // rank or suit of 0 is invalid
+        public void setPosition(Position<Card> pcard) {
+            this.pcard = pcard;
+            this.suit = pcard.getElement().getSuit();
         }
-    
-        public void addCard(Card card) {
-            head = new Node(card, head); // insertion in constant time
+        
+        public card_iterator() {
+            setPosition(plist.first());
+        }
+        
+        @Override
+        public boolean hasNext() {
+            Position<Card> card = plist.after(pcard);
+            if(card == null || card.getElement().getSuit() != suit)
+                return false;
+            return true;
+        }
+
+        @Override
+        public Object next() {
+            Object o = pcard.getElement();
+            pcard = plist.after(pcard);
+            return o;
         }
     }
     
-    CardList cl_heart   = new CardList();
-    CardList cl_diamond = new CardList();
-    CardList cl_spade   = new CardList();
-    CardList cl_club    = new CardList();
+    public CardHand() {
+        for(int i = 0; i < 4; i++)
+            suit_positions[i] = null; // an error check as well as a position
+    }
     
-    /**
-     * @param rank rank of card to add to hand
-     * @param suit suit of card to add to hand
-     */
-    public void addCard(int rank, int suit) {
-        switch(suit) {
-            case Suit.Club:
-                cl_club.addCard(new Card(rank, suit));
-                break;
-            case Suit.Diamond:
-                cl_diamond.addCard(new Card(rank, suit));
-                break;
-            case Suit.Heart:
-                cl_heart.addCard(new Card(rank, suit));
-                break;
-            case Suit.Spade:
-                cl_spade.addCard(new Card(rank, suit));
-                break;
-            default:
-                break;
+    public void addCard(Card c) {
+        int s = c.getSuit();
+        
+        if(suit_positions[s-1] != null) {
+            suit_positions[s-1] = plist.addAfter(suit_positions[s-1], c);
+        } else {
+            suit_positions[s-1] = plist.addLast(c);
         }
     }
+    
+    
+    
 }

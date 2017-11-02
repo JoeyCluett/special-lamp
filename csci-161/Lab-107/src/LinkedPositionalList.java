@@ -75,57 +75,87 @@ public class LinkedPositionalList<E> implements PositionalList<E> {
 
     @Override
     public boolean isEmpty() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        return (size == 0);
     }
 
     @Override
     public Position<E> first() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        return position(header.getNext());
     }
 
     @Override
     public Position<E> last() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        return position(trailer.getPrev());
     }
 
     @Override
     public Position<E> before(Position<E> p) throws IllegalArgumentException {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        Node<E> node = validate(p);
+        return position(node.getPrev());
     }
 
     @Override
     public Position<E> after(Position<E> p) throws IllegalArgumentException {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        Node<E> node = validate(p);
+        return position(node.getPrev());
     }
 
+    private Position<E> addBetween(E e, Node<E> pred, Node<E> succ) {
+        Node<E> newest  = new Node<>(e, pred, succ);
+        pred.setNext(newest);
+        succ.setPrev(newest);
+        size++;
+        return newest;
+    }
+    
     @Override
     public Position<E> addFirst(E e) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        return addBetween(e, header, header.getNext());
     }
 
     @Override
     public Position<E> addLast(E e) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        return addBetween(e, trailer.getPrev(), trailer);
     }
 
     @Override
     public Position<E> addBefore(Position<E> p, E e) throws IllegalArgumentException {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        Node<E> node = validate(p);
+        return addBetween(e, node.getPrev(), node);
     }
 
     @Override
     public Position<E> addAfter(Position<E> p, E e) throws IllegalArgumentException {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        Node<E> node = validate(p);
+        return addBetween(e, node, node.getNext());
     }
 
     @Override
     public E set(Position<E> p, E e) throws IllegalArgumentException {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        Node<E> node = validate(p);
+        E answer = node.getElement();
+        node.setElement(e);
+        return answer;
     }
 
     @Override
     public E remove(Position<E> p) throws IllegalArgumentException {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        Node<E> node = validate(p);
+        Node<E> predecessor = node.getPrev();
+        Node<E> successor = node.getNext();
+        
+        predecessor.setNext(successor);
+        successor.setPrev(predecessor);
+        
+        size--;
+        
+        E answer = node.getElement();
+        
+        node.setElement(null);
+        node.setNext(null);
+        node.setPrev(null);
+        
+        return answer;
     }
     
 }

@@ -15,4 +15,16 @@ public class Card {
     
     void setSuit(int suit) { this.suit = suit; }
     void setRank(int rank) { this.rank = rank; }
+    
+    @Override
+    public String toString() {
+        String ret = "Card[Rank: ";
+        ret += rank; 
+        ret += ", Suit: ";
+        ret += suit;
+        ret += "]";
+        
+        return ret;
+    }
+    
 }
