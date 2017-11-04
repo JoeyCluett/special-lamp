@@ -5,7 +5,7 @@
 public class LinkedPositionalList<E> implements PositionalList<E> {
     
     private static class Node<E> implements Position<E> {
-
+        
         private E element;
         private Node<E> prev;
         private Node<E> next;
@@ -97,7 +97,7 @@ public class LinkedPositionalList<E> implements PositionalList<E> {
     @Override
     public Position<E> after(Position<E> p) throws IllegalArgumentException {
         Node<E> node = validate(p);
-        return position(node.getPrev());
+        return position(node.getNext());
     }
 
     private Position<E> addBetween(E e, Node<E> pred, Node<E> succ) {

@@ -21,7 +21,7 @@ public class Card {
         String ret = "Card[Rank: ";
         ret += rank; 
         ret += ", Suit: ";
-        ret += suit;
+        ret += Suit.getString(suit);
         ret += "]";
         
         return ret;

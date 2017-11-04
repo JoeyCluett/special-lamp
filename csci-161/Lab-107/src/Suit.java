@@ -12,7 +12,22 @@ public class Suit {
     
     public static int RandomSuit() {
         Random rand = new Random();
-        return (rand.nextInt() % 4) + 1; // modulo operation gives 0 - 3, plus 1 gives 1 - 4
+        return Math.abs((rand.nextInt() % 4) + 1); // modulo operation gives 0 - 3, plus 1 gives 1 - 4
+    }
+    
+    public static String getString(int suit) {
+        switch(suit) {
+            case Diamond:
+                return "Diamond";
+            case Heart:
+                return "Heart";
+            case Spade:
+                return "Spade";
+            case Club:
+                return "Club";
+            default:
+                throw new IllegalArgumentException("Unknown suit identifier");
+        }
     }
     
 }

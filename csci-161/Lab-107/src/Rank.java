@@ -21,7 +21,7 @@ public class Rank {
     
     public static int RandomRank() {
         Random rand = new Random();
-        return (rand.nextInt() % 13) + 1;
+        return Math.abs((rand.nextInt() % 13) + 1);
     }
     
 }

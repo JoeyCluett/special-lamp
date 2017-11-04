@@ -6,10 +6,29 @@ import java.util.*; // Iterator
 public class CardHand implements Iterable {
     
     private LinkedPositionalList<Card> plist = new LinkedPositionalList<>();
-    private Position<Card>[] suit_positions = (Position<Card>[])(new Object[4]);
 
+    private Position<Card> pos_Diamond = null;
+    private Position<Card> pos_Heart   = null;
+    private Position<Card> pos_Spade   = null;
+    private Position<Card> pos_Club    = null;
+    
     private int num_cards = 0;
 
+    @Override
+    public String toString() {
+        String ret = "CardHand[";
+        Position<Card> tmp = plist.first();
+        
+        while(tmp != null) {
+            ret += tmp.getElement().toString();
+            ret += ",";
+            tmp = plist.after(tmp);
+        }
+        ret += "]";
+        
+        return ret;
+    }
+    
     @Override
     public Iterator iterator() {
         return new card_iterator();
@@ -19,6 +38,7 @@ public class CardHand implements Iterable {
         
         Position<Card> pcard;
         int suit = 0;
+        boolean suit_specific;
         
         public void setPosition(Position<Card> pcard) {
             this.pcard = pcard;
@@ -27,13 +47,20 @@ public class CardHand implements Iterable {
         
         public card_iterator() {
             setPosition(plist.first());
+            suit_specific = false; // default iterates over entire hand
         }
         
         @Override
         public boolean hasNext() {
             Position<Card> card = plist.after(pcard);
-            if(card == null || card.getElement().getSuit() != suit)
-                return false;
+            
+            if(suit_specific) {
+                if(card == null || card.getElement().getSuit() != suit)
+                    return false;
+            } else {
+                if(card == null)
+                    return false; // only check presence
+            }
             return true;
         }
 
@@ -46,20 +73,39 @@ public class CardHand implements Iterable {
     }
     
     public CardHand() {
-        for(int i = 0; i < 4; i++)
-            suit_positions[i] = null; // an error check as well as a position
+        
     }
     
     public void addCard(Card c) {
         int s = c.getSuit();
-        
-        if(suit_positions[s-1] != null) {
-            suit_positions[s-1] = plist.addAfter(suit_positions[s-1], c);
-        } else {
-            suit_positions[s-1] = plist.addLast(c);
+                
+        switch(s) {
+            case Suit.Diamond:
+                if(pos_Diamond != null)
+                    pos_Diamond = plist.addAfter(pos_Diamond, c);
+                else
+                    pos_Diamond = plist.addLast(c);
+                break;
+            case Suit.Club:
+                if(pos_Club != null)
+                    pos_Club = plist.addAfter(pos_Club, c);
+                else
+                    pos_Club = plist.addLast(c);
+                break;
+            case Suit.Heart:
+                if(pos_Heart != null)
+                    pos_Heart = plist.addAfter(pos_Heart, c);
+                else
+                    pos_Heart = plist.addLast(c);
+                break;
+            case Suit.Spade:
+                if(pos_Spade != null)
+                    pos_Spade = plist.addAfter(pos_Spade, c);
+                else
+                    pos_Spade = plist.addLast(c);
+                break;
+            default:
+                break;
         }
     }
-    
-    
-    
 }
