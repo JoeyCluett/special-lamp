@@ -45,6 +45,14 @@ void writeChunk(char* buffer, int bytes);
 void setup() {
   Dxl.begin(3); // mode 3 is 1 Mbps
   pinMode(BOARD_LED_PIN, OUTPUT);
+  
+  digitalWrite(BOARD_LED_PIN, HIGH);
+  delay(2000);
+  
+  while(SerialUSB.available()) {
+    // clear internal buffer of data
+    byte tmp = SerialUSB.read(); 
+  }
 }
 
 void loop() {
@@ -88,7 +96,7 @@ void applyCurrentState(void) {
       break;
     case STATE_led_cmd:
       readChunk(cmd_buffer, 1); // next byte is the new requested state
-      setLed((int)cmd_buffer[0]);
+      digitalWrite(BOARD_LED_PIN, cmd_buffer[0]);
       break;
     case STATE_ping_cmd:
       readChunk(cmd_buffer, 1);
