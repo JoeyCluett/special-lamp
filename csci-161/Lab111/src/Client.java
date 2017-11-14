@@ -1,7 +1,6 @@
 import java.util.Random; // for generating random numbers
 
 /**
- *
  * @author joey
  */
 public class Client {
@@ -17,6 +16,11 @@ public class Client {
         testUnbalancedTree(unbalancedSearchTree);
     }
     
+    /**
+     * @param tm TreeMap to find height of
+     * @return height of given tree (assume unbalanced)
+     * wrapper over recursive height function
+     */
     public static int getHeightOfTree(TreeMap<Integer, Integer> tm) {
         
         Position<Entry<Integer,Integer>> proot = tm.root();
@@ -26,7 +30,15 @@ public class Client {
         
     }
     
-    // recursively find height of given tree
+    /**
+     * @param p position to calculate height from
+     * @param tm TreeMap that p belongs to
+     * @param current_height current tracked height
+     * @return height of tree from this p
+     * recursively finds height of (assumed) unbalanced tree
+     * balanced tree requires additional calculation afterwards
+     * see testBalancedTree() for example
+     */
     public static int findHeight(
             Position<Entry<Integer,Integer>> p, 
             TreeMap<Integer, Integer> tm, 
@@ -51,6 +63,9 @@ public class Client {
         return current_height;
     }
     
+    /**
+     * @param ubst Unbalanced Search Tree
+     */
     public static void testUnbalancedTree(TreeMap<Integer, Integer> ubst) {
         Random r = new Random();
         
@@ -67,6 +82,9 @@ public class Client {
         System.out.println("Tree map height: " + getHeightOfTree(ubst));
     }
     
+    /**
+     * @param bst Balanced Search Tree
+     */
     public static void testBalancedTree(AVLTreeMap<Integer, Integer> bst) {
         Random r = new Random();
         
@@ -76,10 +94,11 @@ public class Client {
         
         // height of balanced search tree is log base-2 of height of purely unbalanced tree
         // which is what recursive findHeight function returns
+        // log base-n of x can be calcuated as (ln(x)/ln(n)), ln = natural logarithm
         int treeHeight = getHeightOfTree(bst);
-        if(treeHeight != 0)
-            treeHeight = (int)(Math.log((double)treeHeight) / Math.log(2.0));
-        
+        if(treeHeight != 0) // ln doesnt play nice with input of zero
+            treeHeight = (int)(Math.log((double)treeHeight) / Math.log(2.0)); 
+                               // ^^ because Java doesnt have log base-n function
         System.out.println("Tree map height: " + treeHeight);
         
         // key,value insertion routine
