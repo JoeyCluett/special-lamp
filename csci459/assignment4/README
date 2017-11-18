@@ -1,0 +1,66 @@
+to build:
+
+    sh build.sh
+
+this will generate 3 executables:
+>   physical_wire
+>   data_link_layer
+>   network_layer
+
+Run each executable without arguments to see the correct argument order
+
+The executables need to be run in this order:
+    1.) physical_wire
+    2.) data_link_layer
+    3.) network_layer
+
+One additional file is included that contains a series of helper functions to facilitate
+TCP socket creation and management. These functions were made by me with some reference
+source code from well known online sources  (i.e. GitHub and StackOverflow)
+
+This project was created on my personal computer
+OS:   Ubuntu 16.04.5
+CPU:  Intel i5-4590, 3.6GHz
+GPU:  nVidia GTX 1060
+
+Compiled with
+    GCC 5.4.0
+
+As seen in build.sh, no special compiler flags were used
+
+Please direct any questions to:
+    joseph.cluett@ndsu.edu
+            or
+    joe.j.cluett@gmail.com
+
+
+Data flow diagram:
+
++-----------------+       +-----------------+
+| Network Layer 1 |       | Network Layer 2 |
++-----------------+       +-----------------+
+         ^                         ^
+         | Packet                  | Packet
+         v                         v
++-------------------+    +-------------------+
+| Data Link Layer 1 |    | Data Link Layer 2 |
++-------------------+    +-------------------+
+         ^                         ^
+         | Frame                   | Frame
+         v                         v
++---------------------------------------------+
+|              Physical Layer                 |
++---------------------------------------------+
+
+Where each block is simulated with a seperate process
+
+
+
+
+
+
+
+
+
+
+
