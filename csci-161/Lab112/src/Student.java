@@ -1,5 +1,4 @@
 /**
- *
  * @author joe
  */
 public class Student {
