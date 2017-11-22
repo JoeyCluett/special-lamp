@@ -1,8 +1,8 @@
 /**
- * @author joe
+ *
+ * @author joey
  */
-public class IdComp implements Comparator<Student> {
-
+public class GpaComp implements Comparator<Student> {
     /**
      * @param t1 Student 1
      * @param t2 Student 2
@@ -10,11 +10,10 @@ public class IdComp implements Comparator<Student> {
      */
     @Override
     public int compare(Student t1, Student t2) {
-        if(t1.getId() < t2.getId())
-            return -1;
-        if(t1.getId() > t2.getId())
+        if(t1.getGpa() > t2.getGpa())
             return 1;
+        if(t2.getGpa() > t1.getGpa())
+            return -1;
         return 0;
     }
-    
 }

@@ -20,6 +20,8 @@ public class Student {
         this.id       = id;
     }
     
+    public Student() { }
+    
     // getter methods
     public String getLname()    { return lname; }
     public String getFname()    { return fname; }
@@ -34,6 +36,17 @@ public class Student {
     public void setGpa(float gpa)            { this.gpa = gpa; }
     public void setId(int id)                { this.id = id; }
 
-    
+    @Override
+    public String toString() {
+        String tmp = "Student:";
+        
+        tmp += "lastName=" + lname;
+        tmp += ",firstName=" + fname;
+        tmp += ",standing=" + standing;
+        tmp += ",GPA=" + gpa;
+        tmp += ",ID=" + id;
+        
+        return tmp;
+    }
 
 }
