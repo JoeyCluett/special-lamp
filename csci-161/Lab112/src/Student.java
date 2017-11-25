@@ -36,6 +36,17 @@ public class Student {
     public void setGpa(float gpa)            { this.gpa = gpa; }
     public void setId(int id)                { this.id = id; }
 
+    public Student getCopy() {
+        Student s = new Student();
+        s.setFname(new String(fname));       // want copies even though
+        s.setLname(new String(lname));       // it effectively multiplies 
+        s.setStanding(new String(standing)); // the size of our working set
+        s.setGpa(gpa); // already implicitly copies
+        s.setId(id);   // ^
+        
+        return s;
+    }
+    
     @Override
     public String toString() {
         String tmp = "Student:";

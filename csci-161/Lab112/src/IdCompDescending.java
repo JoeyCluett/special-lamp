@@ -11,7 +11,7 @@ public class IdCompDescending implements Comparator<Student> {
      */
     @Override
     public int compare(Student t1, Student t2) {
-        return ic.compare(t1, t2);
+        return -1 * ic.compare(t1, t2);
     }
     
 }
