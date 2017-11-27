@@ -19,6 +19,8 @@ public class Student {
         this.id       = id;
     }
     
+    public Student() { }
+    
     // getter methods
     public String getLname()    { return lname; }
     public String getFname()    { return fname; }
@@ -32,4 +34,29 @@ public class Student {
     public void setStanding(String standing) { this.standing = standing; }
     public void setGpa(float gpa)            { this.gpa = gpa; }
     public void setId(int id)                { this.id = id; }
+
+    public Student getCopy() {
+        Student s = new Student();
+        s.setFname(new String(fname));       // want copies even though
+        s.setLname(new String(lname));       // it effectively multiplies 
+        s.setStanding(new String(standing)); // the size of our working set
+        s.setGpa(gpa); // already implicitly copies
+        s.setId(id);   // ^
+        
+        return s;
+    }
+    
+    @Override
+    public String toString() {
+        String tmp = "Student:";
+        
+        tmp += "lastName=" + lname;
+        tmp += ",firstName=" + fname;
+        tmp += ",standing=" + standing;
+        tmp += ",GPA=" + gpa;
+        tmp += ",ID=" + id;
+        
+        return tmp;
+    }
+
 }
