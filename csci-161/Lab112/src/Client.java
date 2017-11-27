@@ -191,7 +191,6 @@ public class Client { // ... what if EVERYTHING was an object?
     }
     
     /**
-     * 
      * @return integer that is unique as of most recent LUT reset
      */
     public static int getUniqueRandomInt() {
@@ -204,7 +203,6 @@ public class Client { // ... what if EVERYTHING was an object?
     }
     
     /**
-     * 
      * @return string with proper formatting 
      */
     public static String getRandomString() {
