@@ -26,7 +26,7 @@ public class Client {
             StringList sl = FileManip.generateRandomNumberFileGroup(
                     starting_file, // seed for filename generation 
                     5,             // 5 separate files
-                    1000000000);   // 200000000 ints/file (~800MB/file)
+                    100000000);   // 20000000 ints/file (~80MB/file)
             System.out.println("DONE");
             
             // pre-sort each file, individually
