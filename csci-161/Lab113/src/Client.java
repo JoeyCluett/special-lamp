@@ -1,0 +1,190 @@
+import java.io.*;   // FileOutputStream, DataInputStream
+import java.nio.*;  // ByteBuffer
+
+/**
+ *
+ * @author joey
+ * 
+ * All files contain binary numbers because binary is faster to work with than 
+ * ASCII formatted data.
+ * 
+ * The required files are converted to ASCII when all intensive computation is finished
+ * 
+ */
+public class Client {
+    
+    public static void main(String[] args) {
+        // this program was built on a machine running Ubuntu 16.04.1 (Linux)
+        // change depending on your platform (i know nothing about Windows)
+        FileManip.file_prefix = "/tmp/";
+        
+        String final_sorted_data = "sorted_data";
+        String starting_file = "data-file";
+        
+        try {
+            System.out.print("Generating random data...");
+            StringList sl = FileManip.generateRandomNumberFileGroup(
+                    starting_file, // seed for filename generation 
+                    5,             // 5 separate files
+                    1000000000);   // 200000000 ints/file (~800MB/file)
+            System.out.println("DONE");
+            
+            // pre-sort each file, individually
+            System.out.print("Sorting separate smaller files...");
+            for(int i = 0; i < sl.getSize(); i++) {
+                String filename = sl.at(i);
+                
+                // in this way, the working set is NEVER larger than the contents of a single file
+                int[] arr = FileManip.getArray(filename); 
+                QuickSort.Sort(arr);                  // sort a chunk of random data
+                FileManip.writeBinaryToFile(filename, arr); // write sorted data back to file
+            }
+            System.out.println("DONE");
+            
+            // data is now organized as a series of smaller sorted data files
+            // this data will be combined later
+            // verify that all of the smaller files have been sorted correctly
+            for(int i = 0; i < sl.getSize(); i++) {
+                System.out.print("Verifying " + sl.at(i) + "...");
+                if(verifyOrderingOfFile(sl.at(i))) 
+                    System.out.println("PASS");
+                else 
+                    System.out.println("FAIL");
+            }
+            
+            File final_data = new File(FileManip.file_prefix + final_sorted_data);
+            final_data.createNewFile();
+            final_data.delete();
+            final_data.createNewFile(); // guarantees that there is now an EMPTY file here
+            
+            // combine all the files
+            System.out.print("Combining data files...");
+            for(int i = 0; i < sl.getSize(); i++)
+                combineSortedFiles(sl.at(i), final_sorted_data);
+            System.out.println("DONE");
+            
+            System.out.print("Verifying final data file...");
+            if(verifyOrderingOfFile(final_sorted_data))
+                System.out.println("SUCCESS!");
+            else {
+                System.out.println("FAILURE");
+                return; // no point in creating ASCII files if the data is wrong
+            }
+            
+            System.out.print("Generating ASCII file from final data file...");
+            FileManip.convertBinaryToAscii(final_sorted_data);
+            System.out.println("DONE");
+            
+        } catch(Exception e) {
+            e.printStackTrace();
+        }
+    }
+    
+    /**
+     * @param filename
+     * @return whether the given file is sorted correctly
+     * @throws FileNotFoundException
+     * @throws IOException 
+     */
+    public static boolean verifyOrderingOfFile(String filename) 
+            throws FileNotFoundException, IOException {
+        DataInputStream dis = FileManip.openFileForInput(filename);
+        
+        int token = dis.readInt();
+        
+        while(dis.available() > 0) {
+            int tmp = dis.readInt();
+            
+            if(tmp < token) {
+                System.out.println("Data is not sorted correctly");
+                return false;
+            }
+            
+            token = tmp; // new target to test against
+        }
+        
+        // made it all the way through
+        return true;
+    }
+    
+    /**
+     * @param file1
+     * @param file2
+     * @throws java.io.FileNotFoundException
+     * A temporary file is created, data from file1 and file2 is added to
+     * it. temporary file is renamed as file2. original files are deleted
+     * Method does not care about file sizes
+     */
+    public static void combineSortedFiles(String file1, String file2) 
+            throws FileNotFoundException, IOException {
+        boolean file1_good = false;
+        boolean file2_good = false;
+        
+        DataInputStream ds1 = FileManip.openFileForInput(file1);
+        DataInputStream ds2 = FileManip.openFileForInput(file2);
+        
+        // this filename was generated by button-mashing the keyboard
+        String new_file_name = "tmp_7874hje7fy38dhhfd8e";
+        FileOutputStream output = FileManip.openFileForOutput(new_file_name);
+        
+        // read at most 8 bytes of data
+        int f1_token = Integer.MAX_VALUE;
+        int f2_token = Integer.MAX_VALUE;
+        
+        if(ds1.available() > 0) {
+            f1_token = ds1.readInt();
+            file1_good = true;
+        }
+        
+        if(ds2.available() > 0) {
+            f2_token = ds2.readInt();
+            file2_good = true;
+        }
+            
+        // while both of the files have data
+        while(file1_good && file2_good) {
+            if(f1_token < f2_token) {
+                // write integer, then verify next token
+                output.write(ByteBuffer.allocate(4).putInt(f1_token).array());
+                
+                if(ds1.available() > 0)
+                    f1_token = ds1.readInt(); // prep next token
+                else
+                    file1_good = false; // file has no more data
+                
+            } else {
+                // write integer, then verify next token
+                output.write(ByteBuffer.allocate(4).putInt(f2_token).array());
+                
+                if(ds2.available() > 0)
+                    f2_token = ds2.readInt();
+                else
+                    file2_good = false;
+                
+            }
+        }
+        
+        // one or both of the files has run out of data
+        if(file1_good) {
+            output.write(ByteBuffer.allocate(4).putInt(f1_token).array());
+            while(ds1.available() > 0)
+                output.write(ByteBuffer.allocate(4).putInt(ds1.readInt()).array());
+        }
+        
+        if(file2_good) {
+            output.write(ByteBuffer.allocate(4).putInt(f2_token).array());
+            while(ds2.available() > 0)
+                output.write(ByteBuffer.allocate(4).putInt(ds2.readInt()).array());
+        }
+        
+        // both input files have been combined into one, time to delete and rename
+        ds1.close();
+        ds2.close();
+        
+        // delete both old files (their data is now in /tmp/tmp_7874hje7fy38dhhfd8e)
+        FileManip.deleteFile(file1);
+        FileManip.deleteFile(file2);
+        
+        FileManip.renameFile(new_file_name, file2);
+    }
+}
